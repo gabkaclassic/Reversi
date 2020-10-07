@@ -23,8 +23,8 @@ public class Panel extends JPanel {
 
     private static Gamer currentGamer;
 
-    private final Bot bot;
-    private final Player player;
+    private static Bot bot;
+    private static Player player;
 
     public Panel() {
 
@@ -48,13 +48,9 @@ public class Panel extends JPanel {
 
                 currentGamer.move(x, y);
                 repaint();
+                currentGamer.move(x, y);
+                repaint();
 
-                if(movies != m) {
-
-                    changeGamer();
-                    currentGamer.move(x, y);
-                    repaint();
-                }
 
                 if(movies == 0) JOptionPane.showMessageDialog(null, "Bot: " + bot.getCount() + ", player: " + player.getCount());
             }
@@ -111,7 +107,7 @@ public class Panel extends JPanel {
         gr.drawString(String.valueOf(player.getCount()), 250, (SIZE_EDGE * (SIZE_Y + 1)));
     }
 
-    private void changeGamer() {
+    public static void changeGamer() {
 
         if(currentGamer instanceof Bot) currentGamer = player;
         else currentGamer = bot;

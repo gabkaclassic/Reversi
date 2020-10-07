@@ -4,8 +4,9 @@ import ui.Panel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
-import static players.Value.*;
+import static players.Value.NULL;
 
 public abstract class Gamer {
 
@@ -46,17 +47,23 @@ public abstract class Gamer {
 
         int index = getIndex(x, y);
 
-        getPossibleMoves();
+        changePossibleMovies();
 
-        if(possibleMoves.isEmpty()) return;
+        if(possibleMoves.isEmpty()) {
+
+            Panel.changeGamer();
+            return;
+        }
 
         if((field[index].equals(NULL)) && (possibleMoves.contains(index))) {
 
             Panel.decrementMovies();
+            Panel.changeGamer();
             field[index] = value;
             repaintChips(index);
-            checkChips();
         }
+
+        checkChips();
     }
 
     protected abstract int getIndex(int x, int y);
@@ -71,7 +78,7 @@ public abstract class Gamer {
 
     private void repaintChips(int index) {
 
-        int[] steps = new int[] {1, -1, SIZE_X, -SIZE_X, (SIZE_X + 1), (SIZE_X - 1), -(SIZE_X - 1), -(SIZE_X + 1)};
+        int[] steps = new int[] {1, -1, SIZE_X, -SIZE_X, SIZE_X + 1, SIZE_X - 1, -SIZE_X + 1, -SIZE_X - 1};
 
         for(int step: steps)
             if(checkLine(index, step))
@@ -80,11 +87,11 @@ public abstract class Gamer {
 
     private void repaintLine(int begin, int step) {
 
-        for(int i = (begin + step); (i < field.length) && (i > 0) && (!field[i].equals(value)); i += step)
+        for(int i = (begin + step); (i < field.length) && (i >= 0) && (!field[i].equals(value)); i += step)
             field[i] = value;
     }
 
-    protected final void getPossibleMoves() {
+    protected final void changePossibleMovies() {
 
         possibleMoves.clear();
 
@@ -111,13 +118,33 @@ public abstract class Gamer {
 
     protected final boolean checkLine(int begin, int step) {
 
-        for(int i = (begin + step); (i < field.length) && (i > 0); i += step) {
+        Predicate<Integer> predicate;
+
+        if((Math.abs(step) != SIZE_X) && (((step < 0) && (step != (-SIZE_X + 1)) && (begin % SIZE_X == 0))
+                || ((step > 0) && (step != (SIZE_X - 1)) && (begin % SIZE_X == (SIZE_X - 1))))) return false;
+
+            if(Math.abs(step) == 1) {
+
+                if(step < 0) predicate = (i) -> ((i < field.length) && (i >= 0)
+                        && ((i % SIZE_X) < (SIZE_X - 1)));
+                else predicate = (i) -> ((i < field.length) && (i >= 0)
+                            && ((i % SIZE_X) > 0));
+        }
+        else if(Math.abs(step) == SIZE_X) predicate = (i) -> ((i < field.length) && (i >= 0));
+        else {
+
+            if((step == (SIZE_X + 1)) || (step == (-SIZE_X + 1)))
+                predicate = (i) -> ((i < field.length) && (i >= 0) && ((i % SIZE_X) != 0));
+            else predicate = (i) -> ((i < field.length) && (i >= 0) && ((i % SIZE_X) < (SIZE_X - 1)));
+
+        }
+
+         for(int i = (begin + step); predicate.test(i); i += step) {
 
             if(field[i].equals(NULL)) return false;
-            if(field[i].equals(value)) return (Math.abs(begin - i) > Math.abs(step));
+            if(field[i].equals(value)) return (i != (begin + step));
         }
 
         return false;
     }
-
 }

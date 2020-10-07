@@ -16,15 +16,15 @@ public class Bot extends Gamer {
 
     protected int getIndex(int x, int y) {
 
-        int max = 0;
+        int max = -1;
         int index = 0;
 
         for(int ind: possibleMoves) {
 
-            if(prioritiesCard[ind] > max) {
+            if(prioritiesCard[ind] >= max) {
 
-                max = prioritiesCard[ind];
-                index = ind;
+                    max = prioritiesCard[ind];
+                    index = ind;
             }
         }
 
