@@ -57,16 +57,18 @@ public class Panel extends JPanel {
         });
     }
 
-    public static int getSizeEdge() {
-
-        return SIZE_EDGE;
-    }
-
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
 
-        Graphics2D gr = (Graphics2D)g;
+        Graphics2D gr = (Graphics2D) g;
+
+        paintField(gr);
+        paintChips(gr);
+        paintPossibleMovies(gr);
+    }
+
+    private void paintField(Graphics2D gr) {
 
         gr.setColor(Color.GREEN);
         gr.fillRect(0, 0, 800, 900);
@@ -84,27 +86,33 @@ public class Panel extends JPanel {
 
         gr.fillOval(10, (SIZE_EDGE * (SIZE_Y + 1)), SIZE_EDGE, SIZE_EDGE);
 
-        for(int i = 0; i < currentGamer.getField().length; i++) {
-
-            if(currentGamer.getField()[i].equals(NULL)) continue;
-
-            Value value = currentGamer.getField()[i];
-
-            if(value.equals(BLACK)) gr.setColor(Color.BLACK);
-            else gr.setColor(Color.WHITE);
-
-            gr.fillOval(((i % SIZE_X) * SIZE_EDGE), ((i / SIZE_Y) * SIZE_EDGE), SIZE_EDGE, SIZE_EDGE);
-        }
-
-        gr.setColor(Color.GRAY);
-
-        for(int i: currentGamer.getPossibleMovies())
-            gr.fillOval(((i % SIZE_X) * SIZE_EDGE), ((i / SIZE_Y) * SIZE_EDGE), SIZE_EDGE, SIZE_EDGE);
-
         gr.setColor(Color.BLACK);
         gr.drawString(String.valueOf(bot.getCount()), 200, (SIZE_EDGE * (SIZE_Y + 1)));
         gr.setColor(Color.WHITE);
         gr.drawString(String.valueOf(player.getCount()), 250, (SIZE_EDGE * (SIZE_Y + 1)));
+    }
+
+    private void paintChips(Graphics2D gr) {
+
+        for (int i = 0; i < currentGamer.getField().length; i++) {
+
+            if (currentGamer.getField()[i].equals(NULL)) continue;
+
+            Value value = currentGamer.getField()[i];
+
+            if (value.equals(BLACK)) gr.setColor(Color.BLACK);
+            else gr.setColor(Color.WHITE);
+
+            gr.fillOval(((i % SIZE_X) * SIZE_EDGE), ((i / SIZE_Y) * SIZE_EDGE), SIZE_EDGE, SIZE_EDGE);
+        }
+    }
+
+    private void paintPossibleMovies(Graphics2D gr) {
+
+        gr.setColor(Color.GRAY);
+
+        for (int i : currentGamer.getPossibleMovies())
+            gr.fillOval(((i % SIZE_X) * SIZE_EDGE), ((i / SIZE_Y) * SIZE_EDGE), SIZE_EDGE, SIZE_EDGE);
     }
 
     public static void changeGamer() {
@@ -132,6 +140,11 @@ public class Panel extends JPanel {
     public static int getSizeY() {
 
         return SIZE_Y;
+    }
+
+    public static int getSizeEdge() {
+
+        return SIZE_EDGE;
     }
 }
 
